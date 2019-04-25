@@ -8,6 +8,14 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
   const [lines, setLines] = useState([]);
   const socket = useContext(SocketContext);
 
+  // this will run only on first render
+  useEffect(() => {
+    // set the canvas size based on its parent
+    const canvas = canvasRef.current;
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+  }, []);
+
   // this will run every time a new line is added to state
   useEffect(() => {
     console.log("do an effect");
@@ -27,7 +35,26 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
     setLines([...lines, newLine]);
   });
 
-  // not part of component state, use as a temp var to keep track track of mouse moves
+  // Event Handlers
+  const handleMouseDown = ({ nativeEvent: { offsetX, offsetY } }) => {
+    startDrawing(offsetX, offsetY);
+  };
+
+  const handleTouchStart = ({ nativeEvent: { touches } }) => {
+    startDrawing(touches[0].clientX, touches[0].clientY);
+  };
+
+  const handleMouseMove = ({ nativeEvent: { offsetX, offsetY } }) => {
+    drawNextPoint(offsetX, offsetY);
+  };
+
+  const handleTouchMove = event => {
+    event.preventDefault();
+    const { touches } = event.nativeEvent;
+    drawNextPoint(touches[0].clientX, touches[0].clientY);
+  };
+
+  // drawing
   const tempState = {
     line: {
       points: [],
@@ -38,50 +65,15 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
     ctx: null
   };
 
-  const handleMouseDown = ({ nativeEvent: { offsetX, offsetY } }) =>
-    handleDown(offsetX, offsetY);
-
-  const handleTouchStart = ({ nativeEvent: { touches } }) => {
-    handleDown(touches[0].clientX, touches[0].clientY);
-  };
-
-  const handleDown = (newX, newY) => {
+  const startDrawing = (startX, startY) => {
     // setup context, is this the right place to do this...
-    tempState.ctx = tempState.ctx || canvasRef.current.getContext("2d");
-    setupLineStyle(tempState.ctx, tempState.line);
-    // start the line
+    tempState.ctx = canvasRef.current.getContext("2d");
     tempState.isDrawing = true;
-    tempState.line.points = [[newX, newY]];
+    tempState.line.points.push([startX, startY]);
+    setupLineStyle(tempState.ctx, tempState.line);
   };
 
-  const handleTouchEnd = () => {
-    socket.emit("log", { touchEnd: tempState.line });
-    handleUp();
-  };
-
-  const handleTouchCancel = () => {
-    socket.emit("log", { touchCancel: tempState.line });
-    handleUp();
-  };
-
-  const handleUp = () => {
-    tempState.isDrawing = false;
-    if (tempState.line.points.length) {
-      socket.emit("line", tempState.line);
-      setLines([...lines, tempState.line]);
-    }
-  };
-
-  const handleMouseMove = ({ nativeEvent: { offsetX, offsetY } }) =>
-    handleMove(offsetX, offsetY);
-
-  const handleTouchMove = ({ nativeEvent: { touches } }) => {
-    // const [touch] = touches;
-    handleMove(touches[0].clientX, touches[0].clientY);
-    socket.emit("log", { touchMove: [touches[0].clientX, touches[0].clientY] });
-  };
-
-  const handleMove = (newX, newY) => {
+  const drawNextPoint = (newX, newY) => {
     if (!tempState.isDrawing) return;
 
     const [lastX, lastY] = tempState.line.points[
@@ -105,6 +97,14 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
     }
   };
 
+  const endDrawing = () => {
+    tempState.isDrawing = false;
+    if (tempState.line.points.length) {
+      socket.emit("line", tempState.line);
+      setLines([...lines, tempState.line]);
+    }
+  };
+
   // how 2 style the line
   const setupLineStyle = (ctx, line) => {
     ctx.strokeStyle = line.strokeColor;
@@ -125,17 +125,28 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
 
   return (
     <canvas
+      style={{
+        touchAction: "none",
+        cursor: "crosshair",
+        height: "100%",
+        width: "100%"
+      }}
       ref={canvasRef}
-      width={window.innerWidth}
-      height={window.innerHeight}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleUp}
-      onMouseOut={handleUp}
-      onMouseMove={throttle(handleMouseMove, 10)}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchCancel}
-      onTouchMove={throttle(handleTouchMove, 10)}
+      onPointerDown={handleMouseDown}
+      onPointerMove={throttle(handleMouseMove, 10)}
+      onPointerUp={endDrawing}
+      // onPointerLeave={endDrawing}
+      // onPointerOut={endDrawing}
+      onPointerCancel={endDrawing}
+
+      // onMouseDown={handleMouseDown}
+      // onMouseUp={endDrawing}
+      // onMouseOut={endDrawing}
+      // onMouseMove={throttle(handleMouseMove, 10)}
+      // onTouchStart={handleTouchStart}
+      // onTouchEnd={endDrawing}
+      // onTouchCancel={endDrawing}
+      // onTouchMove={throttle(handleTouchMove, 10)}
     />
   );
 };

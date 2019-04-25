@@ -1,26 +1,32 @@
 import React, { useState } from "react";
 import Canvas from "./Canvas";
 import SocketProvider from "../sockets/SocketProvider";
+import ColorPickerContainer from "./ColorPickerContainer";
 
-const colors = ["black", "red", "orange", "yellow", "green", "blue", "purple"];
+// const serverUrl = "http://localhost:3456"
+const serverUrl = "http://e435ac4b.ngrok.io";
 
 function App() {
   const [strokeColor, setStrokeColor] = useState("black");
   const [lineWidth, setLineWidth] = useState(2);
 
   return (
-    <SocketProvider url="http://5fba75db.ngrok.io">
-      <div>
-        <select
-          value={strokeColor}
-          onChange={({ target: { value } }) => setStrokeColor(value)}
-        >
-          {colors.map(color => (
-            <option key={color} value={color}>
-              {color}
-            </option>
-          ))}
-        </select>
+    <SocketProvider url={serverUrl}>
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          height: "600px",
+          border: "3px solid #ccc",
+          margin: "0 auto"
+        }}
+      >
+        <div className="tool-container">
+          <ColorPickerContainer
+            selectedColor={strokeColor}
+            handleSelectColor={setStrokeColor}
+          />
+        </div>
         <input
           type="range"
           min={1}
@@ -28,7 +34,9 @@ function App() {
           value={lineWidth}
           onChange={({ target: { value } }) => setLineWidth(value)}
         />
-        <Canvas strokeColor={strokeColor} lineWidth={lineWidth} />
+        <div className="canvas-container" style={{ height: "100%" }}>
+          <Canvas strokeColor={strokeColor} lineWidth={lineWidth} />
+        </div>
       </div>
     </SocketProvider>
   );
