@@ -8,7 +8,7 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
   const [lines, setLines] = useState([]);
   const socket = useContext(SocketContext);
 
-  // this will run only on first render
+  // this will run only on first render because it gets passed an empty array as the second argument
   useEffect(() => {
     // set the canvas size based on its parent
     const canvas = canvasRef.current;
@@ -40,18 +40,8 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
     startDrawing(offsetX, offsetY);
   };
 
-  const handleTouchStart = ({ nativeEvent: { touches } }) => {
-    startDrawing(touches[0].clientX, touches[0].clientY);
-  };
-
   const handleMouseMove = ({ nativeEvent: { offsetX, offsetY } }) => {
     drawNextPoint(offsetX, offsetY);
-  };
-
-  const handleTouchMove = event => {
-    event.preventDefault();
-    const { touches } = event.nativeEvent;
-    drawNextPoint(touches[0].clientX, touches[0].clientY);
   };
 
   // drawing
@@ -127,7 +117,6 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
     <canvas
       style={{
         touchAction: "none",
-        cursor: "crosshair",
         height: "100%",
         width: "100%"
       }}
@@ -135,18 +124,9 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
       onPointerDown={handleMouseDown}
       onPointerMove={throttle(handleMouseMove, 10)}
       onPointerUp={endDrawing}
+      onPointerCancel={endDrawing}
       // onPointerLeave={endDrawing}
       // onPointerOut={endDrawing}
-      onPointerCancel={endDrawing}
-
-      // onMouseDown={handleMouseDown}
-      // onMouseUp={endDrawing}
-      // onMouseOut={endDrawing}
-      // onMouseMove={throttle(handleMouseMove, 10)}
-      // onTouchStart={handleTouchStart}
-      // onTouchEnd={endDrawing}
-      // onTouchCancel={endDrawing}
-      // onTouchMove={throttle(handleTouchMove, 10)}
     />
   );
 };

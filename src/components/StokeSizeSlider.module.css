@@ -1,0 +1,30 @@
+.strokeSizeSlider {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.strokeSizeSlider input {
+  width: 100%;
+  height: 4px;
+  background: #000; 
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.strokeSizeSlider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  /* background: #fff; */
+}
+
+.strokeSizeSlider input:focus {
+  outline: none;
+}
