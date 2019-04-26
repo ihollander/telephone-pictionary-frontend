@@ -8,7 +8,7 @@ const StrokeSizeSlider = ({ value, handleSelectSize }) => {
   };
 
   return (
-    <div className={styles.strokeSizeSlider}>
+    <div>
       <input
         type="range"
         onChange={handleChange}

@@ -20,7 +20,7 @@ const arrToRgb = arr => `rgb(${arr.join(",")})`;
 export const gradientStepToRBG = value => {
   const calcDiff = (color1, color2) => {
     const diff = Math.round((color1 - color2) * (value - step1));
-    return diff < 0 ? color2 + diff : color1 - diff;
+    return diff < 0 ? color1 + -diff : color1 - diff;
   };
 
   // where in the steps is our value
@@ -31,7 +31,6 @@ export const gradientStepToRBG = value => {
   const arr1 = rgbToArray(steps[step1]);
   const arr2 = rgbToArray(steps[step2]);
 
-  debugger;
   // find the diff
   const r = calcDiff(arr1[0], arr2[0]); // 0 * 0.5
   const g = calcDiff(arr1[1], arr2[1]); // 0 * 0.5
