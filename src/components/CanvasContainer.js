@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Canvas from "./Canvas";
 import ColorSlider from "./ColorSlider";
 import StrokeSizeSlider from "./StrokeSizeSlider";
-import { valueToRGB, gradientStepToRBG } from "../helpers/colors";
+import { gradientStepToRBG } from "../helpers/colors";
 
 const CanvasContainer = () => {
   const [lineWidth, setLineWidth] = useState(6);

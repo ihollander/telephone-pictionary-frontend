@@ -2,11 +2,16 @@ import React from "react";
 import styles from "./StokeSizeSlider.module.css";
 
 const StrokeSizeSlider = ({ value, handleSelectSize }) => {
+  const handleChange = ({ target: { value } }) => {
+    console.log(value);
+    handleSelectSize(value);
+  };
+
   return (
     <div className={styles.strokeSizeSlider}>
       <input
         type="range"
-        onChange={({ target: { value } }) => handleSelectSize(value)}
+        onChange={handleChange}
         value={value}
         min={1}
         max={20}
