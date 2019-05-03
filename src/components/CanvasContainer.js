@@ -2,11 +2,22 @@ import React, { useState } from "react";
 import Canvas from "./Canvas";
 import ColorSlider from "./ColorSlider";
 import StrokeSizeSlider from "./StrokeSizeSlider";
-import { gradientStepToRBG } from "../helpers/colors";
 
 const CanvasContainer = () => {
   const [lineWidth, setLineWidth] = useState(6);
-  const [colorValue, setColorValue] = useState(0);
+  const [rgb, setRgb] = useState("rgb(255,0,0)");
+
+  const gradientSteps = [
+    "rgb(255,0,0)",
+    "rgb(255,0,255)",
+    "rgb(0,0,255)",
+    "rgb(0,255,255)",
+    "rgb(0,255,0)",
+    "rgb(255,255,0)",
+    "rgb(255,0,0)",
+    "rgb(0,0,0)",
+    "rgb(255,255,255)"
+  ];
 
   return (
     <div
@@ -20,14 +31,11 @@ const CanvasContainer = () => {
       }}
     >
       <div className="tool-container">
-        <ColorSlider value={colorValue} handleSelectColor={setColorValue} />
+        <ColorSlider gradientSteps={gradientSteps} onChange={setRgb} />
         <StrokeSizeSlider value={lineWidth} handleSelectSize={setLineWidth} />
       </div>
       <div className="canvas-container" style={{ height: "100%" }}>
-        <Canvas
-          strokeColor={gradientStepToRBG(colorValue)}
-          lineWidth={lineWidth}
-        />
+        <Canvas strokeColor={rgb} lineWidth={lineWidth} />
       </div>
     </div>
   );

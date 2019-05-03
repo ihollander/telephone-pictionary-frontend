@@ -31,7 +31,7 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
   }, [lines]);
 
   useSocketListener("line", newLine => {
-    console.log("socket line", newLine);
+    console.log("socket a line", newLine);
     setLines([...lines, newLine]);
   });
 
@@ -44,7 +44,7 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
     drawNextPoint(offsetX, offsetY);
   };
 
-  // drawing
+  // drawing state
   const tempState = {
     line: {
       points: [],
@@ -56,7 +56,6 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
   };
 
   const startDrawing = (startX, startY) => {
-    // setup context, is this the right place to do this...
     tempState.ctx = canvasRef.current.getContext("2d");
     tempState.isDrawing = true;
     tempState.line.points.push([startX, startY]);
@@ -66,24 +65,13 @@ const Canvas = ({ strokeColor = "black", lineWidth = 2 }) => {
   const drawNextPoint = (newX, newY) => {
     if (!tempState.isDrawing) return;
 
-    const [lastX, lastY] = tempState.line.points[
-      tempState.line.points.length - 1
-    ];
+    const { points } = tempState.line;
+    const [lastX, lastY] = points[points.length - 1];
 
     if (lastX !== newX || lastY !== newY) {
-      tempState.line.points = [...tempState.line.points, [newX, newY]];
       // only draw the newly added point
-      drawLine(tempState.ctx, tempState.line.points.slice(-2));
-      // or draw over the current points every time
-      // drawLine(tempState.ctx, tempState.line.points);
-      // or clear and redraw, this would need to rely on a second context so clear doesn't remove the lines from state
-      // tempState.ctx.clearRect(
-      //   0,
-      //   0,
-      //   tempState.ctx.canvas.width,
-      //   tempState.ctx.canvas.height
-      // );
-      // drawLine(tempState.ctx, tempState.line.points);
+      points.push([newX, newY]);
+      drawLine(tempState.ctx, points.slice(-2));
     }
   };
 
