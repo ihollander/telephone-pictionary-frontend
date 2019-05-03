@@ -7,6 +7,8 @@ export const gradientRangeAdapter = gradientSteps => {
 
   const arrayToRgb = array => `rgb(${array.join(",")})`;
 
+  // given an array of rgb colors and a value representing a point in the gradient
+  // return the RGB value
   const valueToRgb = value => {
     const calculateMidpoint = ([startPoint, endPoint]) =>
       Math.round(startPoint - (startPoint - endPoint) * interval);
