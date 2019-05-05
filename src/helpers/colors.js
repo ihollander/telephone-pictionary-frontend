@@ -21,7 +21,7 @@ export const gradientRangeAdapter = gradientSteps => {
     const endArr = rgbToArray(gradientSteps[endIndex]);
 
     const midArr = startArr
-      .map((point, index) => [point, endArr[index]])
+      .map((startPoint, index) => [startPoint, endArr[index]])
       .map(calculateMidpoint);
 
     const newRgb = arrayToRgb(midArr);
